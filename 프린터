@@ -1,0 +1,70 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int solution(vector<int> priorities, int location) {
+    int answer = 0;
+    vector<S_NODE> answerlist;
+    
+    
+    // location을 저장하기 위한 struct Node
+    struct S_NODE 
+    {
+        int nLocation;
+        int nPriority;
+    };
+
+
+    //자료형이 S_NODE인 printlist(=priorities) 다시 생성  
+    vector<S_NODE> printlist;     
+    
+    for (int i = 0; i < priorities.size(); i++)
+    {
+        S_NODE node = { i, priorities[i] };
+        printlist.push_back(node);
+    }
+    
+    
+  // 반복문을 통해 구현
+    while (!printlist.empty())
+    {
+        S_NODE nodeTmp{};         // node를 지우기전에 백업했다가 다시 push_back할 예정
+
+        int nMaxPriority = printlist.begin()->nPriority;    // 현재 printlist에서 nPriority최대값 구함
+
+        for (int i = 0; i < printlist.size(); i++)
+        {
+            if (nMaxPriority < printlist[i].nPriority)
+                nMaxPriority = printlist[i].nPriority;
+        }
+        
+        // 첫번째 노드를 빼놓고 비교하기위한 준비 작업(+nodeTmp에 백업해놓음)
+        int nComparePriority = printlist.begin()->nPriority;
+        nodeTmp = printlist[0];
+        printlist.erase(printlist.begin());
+
+        // while문의 조건을 만족하면 nodeTmp를 push_back한 후 위의 준비작업 반복
+        while (nComparePriority < nMaxPriority)
+        {
+            printlist.push_back(nodeTmp);
+            nComparePriority = printlist.begin()->nPriority;
+            nodeTmp = printlist[0];
+            printlist.erase(printlist.begin());
+        } 
+        
+        
+        // nMaxPriority보다 크거나 같으면 answerlist로 push_back
+        answerlist.push_back(nodeTmp);
+    }
+    
+    
+    // answerlist의 인덱스 + 1가 프린트 순서
+    for (int i = 0; i < answerlist.size(); i++)
+    {
+        if (location == answerlist[i].nLocation)
+            answer = i + 1;
+    }
+    
+    return answer;
+}
